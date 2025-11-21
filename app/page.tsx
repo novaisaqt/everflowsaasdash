@@ -1,97 +1,220 @@
-"use client"
+'use client'
 
 import { useState } from "react"
-import { Bell, User, Briefcase, Users, Calendar } from "lucide-react"
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
+import { 
+  Users, 
+  Briefcase, 
+  CalendarCheck, 
+  TrendingUp,
+  Bell,
+  Moon,
+  Sun,
+  Search
+} from "lucide-react"
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from "recharts"
 
-const data = [
-  { month: "Jan", applications: 40, interviews: 24, hires: 4 },
-  { month: "Feb", applications: 55, interviews: 30, hires: 6 },
-  { month: "Mar", applications: 70, interviews: 45, hires: 8 },
-  { month: "Apr", applications: 90, interviews: 60, hires: 12 },
-  { month: "May", applications: 110, interviews: 75, hires: 18 },
-  { month: "Jun", applications: 130, interviews: 90, hires: 24 }
+const stats = [
+  { name: "Active Jobs", value: 24, icon: Briefcase },
+  { name: "Candidates", value: 186, icon: Users },
+  { name: "Interviews", value: 42, icon: CalendarCheck },
+  { name: "Hired", value: 18, icon: TrendingUp }
 ]
 
+const hiringData = [
+  { month: "May", applications: 120, hires: 6 },
+  { month: "Jun", applications: 140, hires: 8 },
+  { month: "Jul", applications: 170, hires: 10 },
+  { month: "Aug", applications: 150, hires: 7 },
+  { month: "Sep", applications: 190, hires: 12 },
+  { month: "Oct", applications: 220, hires: 15 }
+]
+
+const sourceData = [
+  { name: "LinkedIn", value: 45 },
+  { name: "Indeed", value: 30 },
+  { name: "Referral", value: 15 },
+  { name: "Website", value: 10 }
+]
+
+const colors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"]
+
 export default function Dashboard() {
-  const [darkMode, setDarkMode] = useState(false)
+  const [dark, setDark] = useState(false)
 
   return (
-    <div className={darkMode ? "bg-[#0f172a] text-white min-h-screen" : "bg-gray-100 text-black min-h-screen"}>
+    <div className={`${dark ? "bg-slate-900 text-white" : "bg-gray-100 text-gray-900"} min-h-screen transition-all duration-500`}>
 
       {/* HEADER */}
-      <header className="flex justify-between items-center p-6 border-b border-gray-700">
-        <h1 className="text-xl font-bold">Everflow Recruitment</h1>
+      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 
-        <div className="flex items-center gap-4">
-          <button onClick={() => setDarkMode(!darkMode)} className="px-3 py-1 border rounded">
-            {darkMode ? "Light" : "Dark"}
-          </button>
+        <h1 className="text-xl font-bold">
+          Everflow Recruitment
+        </h1>
 
-          <Bell className="w-5 h-5" />
-          <User className="w-6 h-6 rounded-full border p-1" />
+        <div className="flex items-center gap-6">
+
+          {dark ? (
+            <Sun onClick={() => setDark(false)} className="cursor-pointer" />
+          ) : (
+            <Moon onClick={() => setDark(true)} className="cursor-pointer" />
+          )}
+
+          <div className="relative">
+            <Bell />
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              3
+            </span>
+          </div>
+
+          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
+            B
+          </div>
         </div>
       </header>
 
-      <main className="p-6 grid gap-6 grid-cols-1 lg:grid-cols-4">
+      <div className="flex">
 
-        {/* KPI Cards */}
-        <div className="bg-[#3B82F6] text-white rounded-xl p-5">
-          <p className="text-sm">Active Jobs</p>
-          <h2 className="text-3xl font-bold">8</h2>
-        </div>
+        {/* SIDEBAR */}
+        <aside className="w-64 p-6 border-r border-gray-200 dark:border-gray-700 hidden md:block">
 
-        <div className="bg-[#10B981] text-white rounded-xl p-5">
-          <p className="text-sm">Candidates</p>
-          <h2 className="text-3xl font-bold">127</h2>
-        </div>
+          <div className="space-y-4">
 
-        <div className="bg-[#F59E0B] text-white rounded-xl p-5">
-          <p className="text-sm">Interviews</p>
-          <h2 className="text-3xl font-bold">14</h2>
-        </div>
+            {stats.map((stat, i) => {
+              const Icon = stat.icon
+              return (
+                <div
+                  key={i}
+                  className="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow"
+                >
+                  <Icon />
+                  <div>
+                    <p className="text-sm">{stat.name}</p>
+                    <p className="text-lg font-bold">{stat.value}</p>
+                  </div>
+                </div>
+              )
+            })}
 
-        <div className="bg-[#EF4444] text-white rounded-xl p-5">
-          <p className="text-sm">Offers</p>
-          <h2 className="text-3xl font-bold">5</h2>
-        </div>
+          </div>
 
-        {/* Chart */}
-        <div className="bg-white dark:bg-[#1e293b] col-span-1 lg:col-span-4 p-6 rounded-xl">
-          <h2 className="text-xl font-bold mb-4">Hiring Pipeline Trend</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="applications" stroke="#3B82F6" strokeWidth={2} />
-              <Line type="monotone" dataKey="interviews" stroke="#10B981" strokeWidth={2} />
-              <Line type="monotone" dataKey="hires" stroke="#EF4444" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        </aside>
 
-        {/* Activity */}
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 col-span-1 lg:col-span-2">
-          <h3 className="font-bold mb-4">Recent Activity</h3>
-          <ul className="space-y-3 text-sm">
-            <li>✅ Sarah applied for Frontend Developer</li>
-            <li>📞 James scheduled phone screen</li>
-            <li>📩 Offer sent to Olivia</li>
-          </ul>
-        </div>
+        {/* MAIN */}
+        <main className="flex-1 p-6 space-y-6">
 
-        {/* Upcoming Interviews */}
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 col-span-1 lg:col-span-2">
-          <h3 className="font-bold mb-4">Upcoming Interviews</h3>
-          <ul className="space-y-3 text-sm">
-            <li>10:00am – John (Engineering)</li>
-            <li>12:30pm – Amy (Marketing)</li>
-            <li>3:00pm – Chris (Sales)</li>
-          </ul>
-        </div>
+          {/* SEARCH BAR */}
+          <div className="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl">
+            <Search />
+            <input
+              type="text"
+              placeholder="Search candidates, jobs..."
+              className="bg-transparent outline-none w-full"
+            />
+          </div>
 
-      </main>
+          {/* CHARTS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {/* LINE CHART */}
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
+              <h2 className="font-bold mb-4">Hiring Trends</h2>
+
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={hiringData}>
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="applications"
+                    stroke="#3B82F6"
+                    strokeWidth={3}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="hires"
+                    stroke="#10B981"
+                    strokeWidth={3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+
+            </div>
+
+            {/* PIE CHART */}
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
+              <h2 className="font-bold mb-4">Source of Hire</h2>
+
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={sourceData}
+                    dataKey="value"
+                    nameKey="name"
+                    outerRadius={100}
+                  >
+                    {sourceData.map((_, index) => (
+                      <Cell key={index} fill={colors[index]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+
+            </div>
+
+          </div>
+
+          {/* CANDIDATES TABLE */}
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-6">
+
+            <h2 className="font-bold mb-4">Recent Candidates</h2>
+
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b">
+                  <th className="p-2">Name</th>
+                  <th className="p-2">Position</th>
+                  <th className="p-2">Stage</th>
+                  <th className="p-2">Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Sarah Jones", "Frontend Dev", "Interview", "⭐⭐⭐⭐"],
+                  ["Mike Hall", "Sales Rep", "Offer", "⭐⭐⭐"],
+                  ["Emily Chen", "Designer", "Screening", "⭐⭐⭐⭐⭐"],
+                  ["Alex Smith", "Backend Dev", "Hired", "⭐⭐⭐⭐"]
+                ].map((c, i) => (
+                  <tr
+                    key={i}
+                    className="border-b hover:bg-gray-50 dark:hover:bg-slate-700"
+                  >
+                    <td className="p-2">{c[0]}</td>
+                    <td className="p-2">{c[1]}</td>
+                    <td className="p-2">{c[2]}</td>
+                    <td className="p-2">{c[3]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+          </div>
+
+        </main>
+
+      </div>
+
     </div>
   )
 }
