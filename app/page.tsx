@@ -1,208 +1,97 @@
-import React, { useState, useMemo } from "react";
-import { Bell, Moon, Sun, User, Briefcase, Users, Calendar, CheckCircle2, BarChart2, Settings, Search, Filter, Plus, Mail, MoveRight, X, ChevronDown, ChevronRight } from "lucide-react";
-import { LineChart, Line, PieChart, Pie, BarChart as RBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+"use client"
 
-// --- MOCK DATA ---
-const STAGES = ["Applications", "Screening", "Phone", "Technical", "Final", "Offer", "Hired"];
-const SOURCES = ["LinkedIn", "Indeed", "Referral", "Website", "Other"];
+import { useState } from "react"
+import { Bell, User, Briefcase, Users, Calendar } from "lucide-react"
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 
-const sampleCandidates = Array.from({ length: 15 }).map((_, i) => ({
-  id: i + 1,
-  name: `Candidate ${i + 1}`,
-  position: ["Frontend Dev", "Backend Dev", "Sales Exec", "Designer"][i % 4],
-  stage: STAGES[i % STAGES.length],
-  rating: (i % 5) + 1,
-  source: SOURCES[i % SOURCES.length],
-  date: new Date(2025, 0, i + 5).toDateString(),
-}));
+const data = [
+  { month: "Jan", applications: 40, interviews: 24, hires: 4 },
+  { month: "Feb", applications: 55, interviews: 30, hires: 6 },
+  { month: "Mar", applications: 70, interviews: 45, hires: 8 },
+  { month: "Apr", applications: 90, interviews: 60, hires: 12 },
+  { month: "May", applications: 110, interviews: 75, hires: 18 },
+  { month: "Jun", applications: 130, interviews: 90, hires: 24 }
+]
 
-const sampleJobs = [
-  { title: "Frontend Developer", dept: "Engineering", applicants: 12, status: "Active" },
-  { title: "Sales Manager", dept: "Sales", applicants: 8, status: "Active" },
-  { title: "UI Designer", dept: "Design", applicants: 5, status: "On Hold" },
-  { title: "Product Manager", dept: "Product", applicants: 9, status: "Active" },
-];
-
-const trendData = [
-  { name: "Mar", apps: 30, interviews: 10, hires: 3 },
-  { name: "Apr", apps: 40, interviews: 15, hires: 5 },
-  { name: "May", apps: 60, interviews: 25, hires: 7 },
-  { name: "Jun", apps: 80, interviews: 30, hires: 9 },
-  { name: "Jul", apps: 90, interviews: 35, hires: 11 },
-];
-
-// --- COMPONENT ---
-export default function RecruitmentDashboard() {
-  const [tab, setTab] = useState("Overview");
-  const [dark, setDark] = useState(true);
-  const [stageFilter, setStageFilter] = useState(null);
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-
-  const filteredCandidates = useMemo(() => {
-    if (!stageFilter) return sampleCandidates;
-    return sampleCandidates.filter(c => c.stage === stageFilter);
-  }, [stageFilter]);
+export default function Dashboard() {
+  const [darkMode, setDarkMode] = useState(false)
 
   return (
-    <div className={`${dark ? "bg-[#0f172a] text-white" : "bg-gray-100 text-black"} min-h-screen flex`}>
-      {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 p-4 bg-black/30 space-y-6">
-        <h2 className="text-xl font-bold">Everflow AI</h2>
-        <div className="space-y-2">
-          <SidebarStat label="Active Jobs" value="8" icon={<Briefcase />} />
-          <SidebarStat label="Candidates" value="15" icon={<Users />} />
-          <SidebarStat label="Interviews" value="5" icon={<Calendar />} />
+    <div className={darkMode ? "bg-[#0f172a] text-white min-h-screen" : "bg-gray-100 text-black min-h-screen"}>
+
+      {/* HEADER */}
+      <header className="flex justify-between items-center p-6 border-b border-gray-700">
+        <h1 className="text-xl font-bold">Everflow Recruitment</h1>
+
+        <div className="flex items-center gap-4">
+          <button onClick={() => setDarkMode(!darkMode)} className="px-3 py-1 border rounded">
+            {darkMode ? "Light" : "Dark"}
+          </button>
+
+          <Bell className="w-5 h-5" />
+          <User className="w-6 h-6 rounded-full border p-1" />
         </div>
-      </aside>
+      </header>
 
-      {/* Main */}
-      <div className="flex-1">
-        {/* Header */}
-        <header className="flex justify-between items-center p-4 border-b border-white/10">
-          <nav className="flex gap-6">
-            {['Overview','Candidates','Jobs','Analytics','Settings'].map(t => (
-              <button key={t} onClick={() => setTab(t)} className={`hover:text-blue-400 ${tab===t && 'text-blue-400'}`}>{t}</button>
-            ))}
-          </nav>
-          <div className="flex items-center gap-4">
-            <button><Bell /></button>
-            <button onClick={() => setDark(!dark)}>{dark ? <Sun/> : <Moon/>}</button>
-            <User />
-          </div>
-        </header>
+      <main className="p-6 grid gap-6 grid-cols-1 lg:grid-cols-4">
 
-        {/* CONTENT */}
-        <main className="p-6">
-          {tab === "Overview" && <Overview tabSetter={setStageFilter} />}
-          {tab === "Candidates" && <Candidates list={filteredCandidates} setSelected={setSelectedCandidate} />}
-          {tab === "Jobs" && <Jobs />}
-          {tab === "Analytics" && <Analytics />}
-          {tab === "Settings" && <SettingsPanel />}
-        </main>
-
-        {selectedCandidate && <CandidateModal candidate={selectedCandidate} onClose={()=>setSelectedCandidate(null)} />}
-      </div>
-    </div>
-  );
-}
-
-// --- Sub Components ---
-function SidebarStat({label,value,icon}){
-  return(
-    <div className="flex items-center gap-2 p-3 bg-white/5 rounded">
-      {icon}
-      <div>
-        <p className="text-xs text-gray-400">{label}</p>
-        <p className="font-bold">{value}</p>
-      </div>
-    </div>
-  )
-}
-
-function Overview({tabSetter}){
-  return(
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Overview</h1>
-      <div className="grid md:grid-cols-4 gap-4">
-        {STAGES.map(stage => (
-          <button key={stage} onClick={()=>tabSetter(stage)} className="p-4 rounded bg-white/5 hover:bg-blue-500/20">{stage}</button>
-        ))}
-      </div>
-      <div className="grid md:grid-cols-2 gap-6">
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={trendData}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Line dataKey="apps" stroke="#3b82f6" />
-            <Line dataKey="hires" stroke="#10b981" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  )
-}
-
-function Candidates({list,setSelected}){
-  return(
-    <div>
-      <h1 className="text-2xl mb-4">Candidates</h1>
-      <table className="w-full text-left">
-        <thead><tr><th>Name</th><th>Position</th><th>Stage</th><th>Rating</th><th></th></tr></thead>
-        <tbody>
-          {list.map(c=> (
-            <tr key={c.id} className="border-t border-white/10">
-              <td>{c.name}</td>
-              <td>{c.position}</td>
-              <td>{c.stage}</td>
-              <td>{"⭐".repeat(c.rating)}</td>
-              <td><button onClick={()=>setSelected(c)} className="text-blue-400">View</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-function Jobs(){
-  return(
-    <div>
-      <h1 className="text-2xl mb-4 flex justify-between">Jobs <button className="bg-blue-500 px-3 py-1 rounded flex items-center gap-1"><Plus size={16}/>New</button></h1>
-      <div className="grid md:grid-cols-3 gap-4">
-        {sampleJobs.map((j,i)=> (
-          <div key={i} className="p-4 bg-white/5 rounded space-y-2">
-            <h2 className="font-bold">{j.title}</h2>
-            <p>{j.dept}</p>
-            <p>Applicants: {j.applicants}</p>
-            <span className="text-xs bg-blue-500/20 px-2 py-1 rounded">{j.status}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function Analytics(){
-  return(
-    <div>
-      <h1 className="text-2xl mb-6">Analytics</h1>
-      <ResponsiveContainer width="100%" height={300}>
-        <RBarChart data={trendData}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="apps" fill="#3b82f6" />
-        </RBarChart>
-      </ResponsiveContainer>
-    </div>
-  )
-}
-
-function SettingsPanel(){
-  return(
-    <div className="space-y-4">
-      <h1 className="text-2xl">Settings</h1>
-      <input className="p-2 bg-white/10 w-full" placeholder="Company name" />
-      <textarea className="p-2 bg-white/10 w-full" placeholder="Email template..." />
-    </div>
-  )
-}
-
-function CandidateModal({candidate,onClose}){
-  return(
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
-      <div className="bg-[#0f172a] p-6 rounded w-full max-w-lg space-y-4">
-        <div className="flex justify-between">
-          <h2 className="text-xl font-bold">{candidate.name}</h2>
-          <button onClick={onClose}><X /></button>
+        {/* KPI Cards */}
+        <div className="bg-[#3B82F6] text-white rounded-xl p-5">
+          <p className="text-sm">Active Jobs</p>
+          <h2 className="text-3xl font-bold">8</h2>
         </div>
-        <p>Position: {candidate.position}</p>
-        <p>Stage: {candidate.stage}</p>
-        <p>Source: {candidate.source}</p>
-        <p>Applied: {candidate.date}</p>
-        <button className="bg-green-500 px-3 py-1 rounded">Move Stage</button>
-      </div>
+
+        <div className="bg-[#10B981] text-white rounded-xl p-5">
+          <p className="text-sm">Candidates</p>
+          <h2 className="text-3xl font-bold">127</h2>
+        </div>
+
+        <div className="bg-[#F59E0B] text-white rounded-xl p-5">
+          <p className="text-sm">Interviews</p>
+          <h2 className="text-3xl font-bold">14</h2>
+        </div>
+
+        <div className="bg-[#EF4444] text-white rounded-xl p-5">
+          <p className="text-sm">Offers</p>
+          <h2 className="text-3xl font-bold">5</h2>
+        </div>
+
+        {/* Chart */}
+        <div className="bg-white dark:bg-[#1e293b] col-span-1 lg:col-span-4 p-6 rounded-xl">
+          <h2 className="text-xl font-bold mb-4">Hiring Pipeline Trend</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data}>
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="applications" stroke="#3B82F6" strokeWidth={2} />
+              <Line type="monotone" dataKey="interviews" stroke="#10B981" strokeWidth={2} />
+              <Line type="monotone" dataKey="hires" stroke="#EF4444" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Activity */}
+        <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 col-span-1 lg:col-span-2">
+          <h3 className="font-bold mb-4">Recent Activity</h3>
+          <ul className="space-y-3 text-sm">
+            <li>✅ Sarah applied for Frontend Developer</li>
+            <li>📞 James scheduled phone screen</li>
+            <li>📩 Offer sent to Olivia</li>
+          </ul>
+        </div>
+
+        {/* Upcoming Interviews */}
+        <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 col-span-1 lg:col-span-2">
+          <h3 className="font-bold mb-4">Upcoming Interviews</h3>
+          <ul className="space-y-3 text-sm">
+            <li>10:00am – John (Engineering)</li>
+            <li>12:30pm – Amy (Marketing)</li>
+            <li>3:00pm – Chris (Sales)</li>
+          </ul>
+        </div>
+
+      </main>
     </div>
   )
 }
