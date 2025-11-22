@@ -20,14 +20,16 @@ if (!supabaseAdmin) {
 const [
   pipelineCountsRes,
   candidatesRes,
-  opportunitiesRes,
+  oppsRes,
+  hotCandidatesRes,
 ] = await Promise.all([
-  supabaseAdmin.from('tenants').select('id'),
-  supabaseAdmin.from('candidates').select('id, tenant_id, status'),
-  supabaseAdmin.from('opportunities').select('id, tenant_id, stage_id'),
+  supabaseAdmin.from("tenants").select("id"),
+  supabaseAdmin.from("candidates").select("id, tenant_id, status"),
+  supabaseAdmin.from("opportunities").select("id, tenant_id, stage_id"),
+  supabaseAdmin.from("candidate_master").select("id").gte("fit_score", 80),
 ]);
 
- const totalTenants = pipelineCountsRes.data?.length ?? 
+ const totalTenants = pipelineCountsRes.data?.length ?? 0
   const totalCandidates = candidatesRes.data?.length ?? 0
   const totalOpps = oppsRes.data?.length ?? 0
   const hotCandidates = hotCandidatesRes.data?.length ?? 0
