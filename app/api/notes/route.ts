@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
-import { requireTenant } from '@/lib/auth'
+import { createClient } from '@supabase/supabase-js'
 
-export async function POST(req: NextRequest) {
-  const tenant = await requireTenant('manager')
-  const { candidateId, content } = await req.json()
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-  await supabaseAdmin.from('candidate_notes').insert({
-    tenant_id: tenant.tenantId,
-    candidate_id: candidateId,
-    content,
-  })
-
-  return NextResponse.json({ success: true })
+if (!supabaseUrl || !serviceRoleKey) {
+  throw new Error('SUPABASE ENV VARIABLES MISSING')
 }
+
+export const supabaseAdmin = createClient(
+  supabaseUrl,
+  serviceRoleKey,
+  {
+    auth: { persistSession: false }
+  }
+)
