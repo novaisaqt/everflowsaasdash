@@ -1,9 +1,14 @@
+import React from "react";
+
 export default function StatsBar() {
   return (
-    <div className="flex items-center gap-3 bg-slate-900/80 border border-slate-700 px-4 py-2 rounded-full">
-      <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse"></span>
-      <span className="text-sm text-slate-300">Time to shortlist</span>
-      <span className="text-sm font-bold text-white">05:00</span>
+    <div className="flex items-center gap-6 text-sm text-slate-400">
+      <div className="border border-sky-500/30 px-3 py-1 rounded-full">
+        Active Role: Senior Product Engineer (Remote)
+      </div>
+      <div className="border border-emerald-500/30 px-3 py-1 rounded-full text-emerald-400">
+        ⏱ Time to shortlist: 05:00
+      </div>
     </div>
   );
 }
