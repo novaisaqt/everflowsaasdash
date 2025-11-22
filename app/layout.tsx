@@ -1,8 +1,9 @@
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata = {
-  title: "Everflow Hire – 5-Minute AI Hiring Dashboard",
-  description: "AI-powered hiring system for recruiters & hiring managers.",
+  title: "Everflow Hire",
+  description: "5-minute AI hiring system",
 };
 
 export default function RootLayout({
@@ -11,8 +12,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="bg-[#020617] text-white">{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className="bg-[#020617] text-white">
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
