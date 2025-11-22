@@ -1,23 +1,50 @@
-import { supabaseAdmin } from "@/lib/supabase";
-import { requireTenant } from "@/lib/requireTenant";
+import { getSupabaseAdmin } from "@/lib/supabase"
+import { requireTenant } from "@/lib/requireTenant"
+
+export const dynamic = "force-dynamic"
 
 export default async function BillingPage() {
-  const tenant = await requireTenant("manager");
+  try {
+    // Ensure correct tenant
+    const tenant = await requireTenant("admin")
 
-  const { data, error } = await supabaseAdmin
-    .from("billing_accounts")
-    .select("*")
-    .eq("tenant_id", tenant.tenantId)
-    .single();
+    // Lazy-load Supabase (prevents build-time crash)
+    const supabaseAdmin = getSupabaseAdmin()
 
-  if (error) {
-    throw new Error(error.message);
+    const { data: billing, error } = await supabaseAdmin
+      .from("billing_accounts")
+      .select("*")
+      .eq("tenant_id", tenant.tenant.id)
+      .single()
+
+    if (error) {
+      console.error("Billing error:", error)
+      throw new Error("Could not load billing info")
+    }
+
+    return (
+      <div className="p-10">
+        <h1 className="text-2xl font-bold mb-6">Billing</h1>
+
+        {billing ? (
+          <pre className="bg-gray-100 p-4 rounded text-sm overflow-x-auto">
+            {JSON.stringify(billing, null, 2)}
+          </pre>
+        ) : (
+          <p>No billing account found for this tenant</p>
+        )}
+      </div>
+    )
+  } catch (error: any) {
+    console.error("Billing page error:", error)
+
+    return (
+      <div className="p-10">
+        <h1 className="text-2xl font-bold mb-6">Billing</h1>
+        <p className="text-red-500">
+          {error?.message || "An error occurred while loading billing info"}
+        </p>
+      </div>
+    )
   }
-
-  return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold mb-4">Billing</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
-  );
 }
