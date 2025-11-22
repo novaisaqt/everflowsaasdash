@@ -1,10 +1,10 @@
 // app/dashboard/page.tsx
 "use client";
 
-import StatsBar from "../apps/StatsBar";
-
 
 import React, { useState } from "react";
+import StatsBar from "./StatsBar";
+
 
 type CandidateStatus = "unreviewed" | "hire" | "maybe" | "reject";
 
