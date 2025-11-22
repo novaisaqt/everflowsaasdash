@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { callOpenAI } from '@/lib/openai';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requirePlatformAdmin } from '@/lib/auth';
+import { requireTenant } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   await requirePlatformAdmin();
