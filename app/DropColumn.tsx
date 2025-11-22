@@ -1,22 +1,32 @@
 import { Candidate } from "./mockData";
 
-interface Props {
+export default function DropColumn({
+  title,
+  items,
+}: {
   title: string;
-  color: string;
-  candidates: Candidate[];
-}
-
-export default function DropColumn({ title, color, candidates }: Props) {
+  items: Candidate[];
+}) {
   return (
-    <div className={`border border-${color}-500/30 rounded-xl p-4`}>
-      <h3 className={`text-${color}-400 mb-3 font-semibold`}>
-        {title} ({candidates.length})
-      </h3>
+    <div className="border border-white/10 rounded-xl p-4 bg-black/40 min-h-[300px]">
+      <h3 className="mb-4 text-sm font-semibold">{title} ({items.length})</h3>
 
-      <div className="min-h-[180px] border border-dashed border-white/10 rounded-lg flex items-center justify-center text-xs text-slate-500">
-        {candidates.length === 0 ? "Drop candidates here" : ""}
+      <div className="space-y-3">
+        {items.map((c) => (
+          <div
+            key={c.id}
+            className="p-2 border border-white/10 rounded bg-white/5"
+          >
+            {c.name} — {c.score}%
+          </div>
+        ))}
+
+        {items.length === 0 && (
+          <p className="text-xs text-gray-500 text-center pt-10">
+            Empty
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
