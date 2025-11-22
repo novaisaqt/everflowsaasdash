@@ -1,44 +1,27 @@
-import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
-import { requireTenant } from "@/lib/auth"
+import { supabaseAdmin } from "@/lib/supabase";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
-
-const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
-  auth: { persistSession: false }
-})
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const tenant = await requireTenant()
+    const body = await req.json();
 
-    const formData = await req.formData()
-    const files = formData.getAll("files") as File[]
-
-    if (!files || files.length === 0) {
-      return NextResponse.json({ error: "No files uploaded" }, { status: 400 })
+    if (!Array.isArray(body)) {
+      return Response.json({ error: "Expected an array of CVs" }, { status: 400 });
     }
 
-    const uploaded: string[] = []
+    const { data, error } = await supabaseAdmin
+      .from("candidates")
+      .insert(body)
+      .select();
 
-    for (const file of files) {
-      const buffer = Buffer.from(await file.arrayBuffer())
-
-      const path = `${tenant.tenantId}/bulk/${Date.now()}-${file.name}`
-
-      const { error } = await supabaseAdmin.storage
-        .from("cv-files")
-        .upload(path, buffer, {
-          contentType: file.type,
-          upsert: true
-        })
-
-      if (!error) uploaded.push(path)
+    if (error) {
+      console.error("Supabase bulk error:", error);
+      return Response.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, files: uploaded })
-  } catch (err) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ success: true, inserted: data?.length });
+
+  } catch (err: any) {
+    console.error("Server error:", err);
+    return Response.json({ error: err.message }, { status: 500 });
   }
 }
