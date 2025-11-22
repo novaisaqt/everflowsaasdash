@@ -1,48 +1,74 @@
-import { Candidate } from "./mockData";
+import React from "react";
 
-export default function CandidateCard({
-  candidate,
-  onAction
-}: {
+export type CandidateStatus = "unreviewed" | "hire" | "maybe" | "reject";
+
+export interface Candidate {
+  id: string;
+  name: string;
+  role: string;
+  score: number;
+  skills: string[];
+  experience: string;
+  status: CandidateStatus;
+}
+
+interface Props {
   candidate: Candidate;
-  onAction: (action: "hire" | "maybe" | "reject") => void;
-}) {
+  onMove: (id: string, status: CandidateStatus) => void;
+}
+
+export default function CandidateCard({ candidate, onMove }: Props) {
+  const scoreColor =
+    candidate.score >= 85
+      ? "text-green-400"
+      : candidate.score >= 70
+      ? "text-yellow-400"
+      : "text-red-400";
+
   return (
-    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 card-glow mb-4">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold">{candidate.name}</h3>
-        <span className="text-green-400 font-bold">{candidate.score}%</span>
+    <div className="rounded-xl border border-white/5 bg-slate-900/60 p-5 mb-4 shadow-lg">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="text-white text-sm font-semibold">{candidate.name}</h3>
+          <p className="text-xs text-slate-400">
+            {candidate.role} • {candidate.experience}
+          </p>
+        </div>
+
+        <span className={`text-lg font-bold ${scoreColor}`}>
+          {candidate.score}%
+        </span>
       </div>
 
-      <p className="text-sm text-slate-400 mb-3">{candidate.role}</p>
-
-      <div className="flex flex-wrap gap-2 mb-4">
-        {candidate.skills.map((skill, i) => (
+      <div className="flex flex-wrap gap-2 mt-3">
+        {candidate.skills.map((skill) => (
           <span
-            key={i}
-            className="px-3 py-1 text-xs bg-slate-800 border border-slate-700 rounded-full"
+            key={skill}
+            className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300"
           >
             {skill}
           </span>
         ))}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 mt-4 text-xs">
         <button
-          onClick={() => onAction("hire")}
-          className="flex-1 bg-green-500/20 text-green-400 border border-green-500/40 py-2 rounded-lg hover:bg-green-500/40"
+          onClick={() => onMove(candidate.id, "hire")}
+          className="flex-1 py-1.5 rounded-md bg-green-600/20 text-green-400 hover:bg-green-600/40"
         >
-          Hire
+          Move to Hire
         </button>
+
         <button
-          onClick={() => onAction("maybe")}
-          className="flex-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 py-2 rounded-lg hover:bg-yellow-500/40"
+          onClick={() => onMove(candidate.id, "maybe")}
+          className="flex-1 py-1.5 rounded-md bg-yellow-600/20 text-yellow-400 hover:bg-yellow-600/40"
         >
-          Maybe
+          Move to Maybe
         </button>
+
         <button
-          onClick={() => onAction("reject")}
-          className="flex-1 bg-red-500/20 text-red-400 border border-red-500/40 py-2 rounded-lg hover:bg-red-500/40"
+          onClick={() => onMove(candidate.id, "reject")}
+          className="flex-1 py-1.5 rounded-md bg-red-600/20 text-red-400 hover:bg-red-600/40"
         >
           Reject
         </button>
