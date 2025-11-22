@@ -1,17 +1,30 @@
-// /app/(app)/assistant/query/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { callOpenAI } from '@/lib/openai'
-import { supabaseAdmin } from '@/lib/supabase'
-import { requireTenant } from '@/lib/auth'
+import { NextRequest, NextResponse } from "next/server";
+import { callOpenAI } from "@/lib/openai";
+import { supabaseAdmin } from "@/lib/supabase";
+import { requireTenant } from "@/lib/auth";
+
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  export const dynamic = "force-dynamic";
+}
 
 export async function POST(req: NextRequest) {
-  // Require highest role
-  await requireTenant('owner')
 
-  const { question } = await req.json()
+  if (!supabaseAdmin) {
+    return NextResponse.json(
+      { error: "Supabase is not configured correctly" },
+      { status: 500 }
+    );
+  }
 
-  if (!question || typeof question !== 'string') {
-    return NextResponse.json({ error: 'Missing or invalid question' }, { status: 400 })
+  await requireTenant("owner");
+
+  const { question } = await req.json();
+
+  if (!question || typeof question !== "string") {
+    return NextResponse.json(
+      { error: "Missing or invalid question" },
+      { status: 400 }
+    );
   }
 
   const [tenantsRes, candidatesRes, hotRes, pipelineRes] = await Promise.all([
