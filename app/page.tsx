@@ -7,6 +7,7 @@ import CandidateCard from "./CandidateCard";
 import DropColumn from "./DropColumn";
 import { initialCandidates, Candidate } from "./mockData";
 
+
 export default function Page() {
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates);
   const [hire, setHire] = useState<Candidate[]>([]);
