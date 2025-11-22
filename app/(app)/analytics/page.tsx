@@ -27,7 +27,7 @@ const [
   supabaseAdmin.from('opportunities').select('id, tenant_id, stage_id'),
 ]);
 
-  const totalTenants = tenantsRes.data?.length ?? 0
+ const totalTenants = pipelineCountsRes.data?.length ?? 
   const totalCandidates = candidatesRes.data?.length ?? 0
   const totalOpps = oppsRes.data?.length ?? 0
   const hotCandidates = hotCandidatesRes.data?.length ?? 0
