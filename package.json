@@ -24,3 +24,4 @@
     "typescript": "^5.2.2"
   }
 }
+npm install @clerk/nextjs
