@@ -1,9 +1,8 @@
 import "./globals.css";
-import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Everflow Recruitment Dashboard",
-  description: "AI Recruitment SaaS",
+export const metadata = {
+  title: "Everflow AI Hiring Dashboard",
+  description: "5-minute AI hiring system",
 };
 
 export default function RootLayout({
@@ -13,9 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100 text-gray-900">
-        {children}
-      </body>
+      <body className="bg-[#070b16] text-white">{children}</body>
     </html>
   );
 }
