@@ -1,57 +1,58 @@
-import { NextRequest, NextResponse } from "next/server";
-import { callOpenAI } from "@/lib/openai";
-import { supabaseAdmin } from "@/lib/supabase";
-import { requireTenant } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server"
+import { callOpenAI } from "@/lib/openai"
+import { supabaseAdmin } from "@/lib/supabase"
+import { requireTenant } from "@/lib/requireTenant"
 
-// This MUST be top-level, not inside an if
-export const dynamic = "force-dynamic";
+// Required by Next for dynamic API routes
+export const dynamic = "force-dynamic"
 
 export async function POST(req: NextRequest) {
+  try {
+    // Ensure tenant exists (uses /lib/requireTenant.ts we just created)
+    const tenant = await requireTenant("owner")
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !supabaseAdmin) {
-    return NextResponse.json(
-      { error: "Supabase not configured" },
-      { status: 500 }
-    );
-  }
+    const { question } = await req.json()
 
-  await requireTenant("owner");
+    if (!question || typeof question !== "string") {
+      return NextResponse.json(
+        { error: "Missing or invalid question" },
+        { status: 400 }
+      )
+    }
 
-  const { question } = await req.json();
+    // Run all Supabase queries in parallel
+    const [tenantsRes, candidatesRes, hotRes, pipelineRes] =
+      await Promise.all([
+        supabaseAdmin.from("tenants").select("id, name"),
 
-  if (!question || typeof question !== "string") {
-    return NextResponse.json(
-      { error: "Missing or invalid question" },
-      { status: 400 }
-    );
-  }
+        supabaseAdmin
+          .from("candidate_master")
+          .select(
+            "candidate_id, full_name, tenant_name, pipeline_stage, fit_score"
+          )
+          .limit(100),
 
-  const [tenantsRes, candidatesRes, hotRes, pipelineRes] =
-    await Promise.all([
-      supabaseAdmin.from("tenants").select("id, name"),
-      supabaseAdmin
-        .from("candidate_master")
-        .select(
-          "candidate_id, full_name, tenant_name, pipeline_stage, fit_score"
-        )
-        .limit(100),
-      supabaseAdmin
-        .from("candidate_master")
-        .select("candidate_id, full_name, fit_score, tenant_name")
-        .gte("fit_score", 80)
-        .limit(50),
-      supabaseAdmin.from("candidate_master").select("pipeline_stage"),
-    ]);
+        supabaseAdmin
+          .from("candidate_master")
+          .select("candidate_id, full_name, fit_score, tenant_name")
+          .gte("fit_score", 80)
+          .limit(50),
 
-  const context = {
-    tenant_count: tenantsRes.data?.length ?? 0,
-    top_tenants: tenantsRes.data?.slice(0, 10) ?? [],
-    sample_candidates: candidatesRes.data ?? [],
-    hot_candidates: hotRes.data ?? [],
-    pipeline_data: pipelineRes.data ?? [],
-  };
+        supabaseAdmin
+          .from("candidate_master")
+          .select("pipeline_stage"),
+      ])
 
-  const systemPrompt = `
+    const context = {
+      tenant: tenant?.tenant?.name ?? "Unknown",
+      tenant_count: tenantsRes.data?.length ?? 0,
+      top_tenants: tenantsRes.data?.slice(0, 10) ?? [],
+      sample_candidates: candidatesRes.data ?? [],
+      hot_candidates: hotRes.data ?? [],
+      pipeline_data: pipelineRes.data ?? [],
+    }
+
+    const systemPrompt = `
 You are Everflow Recruitment OS assistant.
 You answer questions for the founder about their recruitment SaaS data.
 
@@ -66,21 +67,30 @@ You MUST:
 - Use the context above
 - Be concise and actionable
 - If info is missing, say exactly what is missing
-  `;
+`
 
-  const answer = await callOpenAI([
-    { role: "system", content: systemPrompt },
-    {
-      role: "user",
-      content: `
+    const answer = await callOpenAI([
+      { role: "system", content: systemPrompt },
+      {
+        role: "user",
+        content: `
 User question:
 ${question}
 
 Context:
 ${JSON.stringify(context, null, 2)}
-      `,
-    },
-  ]);
+        `,
+      },
+    ])
 
-  return NextResponse.json({ answer });
+    return NextResponse.json({ answer })
+
+  } catch (error: any) {
+    console.error("Assistant Query Error:", error)
+
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    )
+  }
 }
