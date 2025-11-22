@@ -3,15 +3,14 @@ import { callOpenAI } from "@/lib/openai";
 import { supabaseAdmin } from "@/lib/supabase";
 import { requireTenant } from "@/lib/auth";
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  export const dynamic = "force-dynamic";
-}
+// This MUST be top-level, not inside an if
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
 
-  if (!supabaseAdmin) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !supabaseAdmin) {
     return NextResponse.json(
-      { error: "Supabase is not configured correctly" },
+      { error: "Supabase not configured" },
       { status: 500 }
     );
   }
@@ -27,21 +26,22 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const [tenantsRes, candidatesRes, hotRes, pipelineRes] = await Promise.all([
-    supabaseAdmin.from('tenants').select('id, name'),
-    supabaseAdmin
-      .from('candidate_master')
-      .select('candidate_id, full_name, tenant_name, pipeline_stage, fit_score')
-      .limit(100),
-    supabaseAdmin
-      .from('candidate_master')
-      .select('candidate_id, full_name, fit_score, tenant_name')
-      .gte('fit_score', 80)
-      .limit(50),
-    supabaseAdmin
-      .from('candidate_master')
-      .select('pipeline_stage'),
-  ])
+  const [tenantsRes, candidatesRes, hotRes, pipelineRes] =
+    await Promise.all([
+      supabaseAdmin.from("tenants").select("id, name"),
+      supabaseAdmin
+        .from("candidate_master")
+        .select(
+          "candidate_id, full_name, tenant_name, pipeline_stage, fit_score"
+        )
+        .limit(100),
+      supabaseAdmin
+        .from("candidate_master")
+        .select("candidate_id, full_name, fit_score, tenant_name")
+        .gte("fit_score", 80)
+        .limit(50),
+      supabaseAdmin.from("candidate_master").select("pipeline_stage"),
+    ]);
 
   const context = {
     tenant_count: tenantsRes.data?.length ?? 0,
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     sample_candidates: candidatesRes.data ?? [],
     hot_candidates: hotRes.data ?? [],
     pipeline_data: pipelineRes.data ?? [],
-  }
+  };
 
   const systemPrompt = `
 You are Everflow Recruitment OS assistant.
@@ -66,21 +66,21 @@ You MUST:
 - Use the context above
 - Be concise and actionable
 - If info is missing, say exactly what is missing
-`
+  `;
 
   const answer = await callOpenAI([
-    { role: 'system', content: systemPrompt },
+    { role: "system", content: systemPrompt },
     {
-      role: 'user',
+      role: "user",
       content: `
 User question:
 ${question}
 
 Context:
 ${JSON.stringify(context, null, 2)}
-    `,
+      `,
     },
-  ])
+  ]);
 
-  return NextResponse.json({ answer })
+  return NextResponse.json({ answer });
 }
