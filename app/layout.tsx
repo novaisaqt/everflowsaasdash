@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Everflow AI Hiring Dashboard",
-  description: "5-minute AI hiring system",
+  title: "Everflow Hire – 5-Minute AI Hiring Dashboard",
+  description: "AI-powered hiring system for recruiters & hiring managers.",
 };
 
 export default function RootLayout({
@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#070b16] text-white">{children}</body>
+      <body className="bg-[#020617] text-white">{children}</body>
     </html>
   );
 }
