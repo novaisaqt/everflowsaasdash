@@ -17,3 +17,11 @@ body {
 .card-glow {
   box-shadow: 0 0 0 1px rgba(59,130,246,0.2), 0 20px 40px rgba(0,0,0,0.6);
 }
+body {
+  background: radial-gradient(circle at top, #0f172a 0%, #020617 60%, #000 100%);
+  color: white;
+}
+
+.card-glow {
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.1), 0 20px 40px rgba(0, 0, 0, 0.7);
+}
