@@ -22,31 +22,21 @@ export async function getUserTenant() {
     .from('tenant_memberships')
     .select('role, tenants ( id, name )')
     .eq('user_id', user.id)
-    .single()
+    .limit(1)
+    .maybeSingle()
 
   if (error || !data || !data.tenants) return null
 
-  const tenant = data.tenants as { id: string; name: string }
+  // FIX: Normalise tenants whether it's an object or array
+  const tenantRecord = Array.isArray(data.tenants)
+    ? data.tenants[0]
+    : data.tenants
+
+  if (!tenantRecord) return null
 
   return {
-    tenantId: tenant.id,
-    tenantName: tenant.name,
-    role: data.role as Role
+    tenantId: tenantRecord.id,
+    tenantName: tenantRecord.name,
+    role: data.role as Role,
   }
-}
-
-export async function requireTenant(minRole: Role = 'viewer') {
-  const tenant = await getUserTenant()
-
-  if (!tenant) {
-    throw new Error('NO_TENANT')
-  }
-
-  const order: Role[] = ['viewer', 'manager', 'admin', 'owner']
-
-  if (order.indexOf(tenant.role) < order.indexOf(minRole)) {
-    throw new Error('NO_PERMISSION')
-  }
-
-  return tenant
 }
