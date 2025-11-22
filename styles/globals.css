@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: #111;
+  --fg: #f9fafb;
+}
+
+html,
 body {
-  @apply bg-neutral-950 text-neutral-50 antialiased;
+  background: var(--bg);
+  color: var(--fg);
+  margin: 0;
+  padding: 0;
 }
