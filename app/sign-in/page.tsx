@@ -1,9 +1,10 @@
-import { SignIn } from "@clerk/nextjs"
+// src/app/(auth)/sign-in/[[...sign-in]]/page.tsx
+import { SignIn } from '@clerk/nextjs';
 
-export default function Page() {
+export default function SignInPage() {
   return (
-    <div className="min-h-screen flex justify-center items-center bg-[#0f172a]">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-950">
       <SignIn />
     </div>
-  )
+  );
 }
