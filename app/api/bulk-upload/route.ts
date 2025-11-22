@@ -9,12 +9,18 @@ export async function POST(req: NextRequest) {
 
   for (const file of files) {
     const buffer = Buffer.from(await file.arrayBuffer())
-    const path = `${tenant.tenantId}/bulk/${Date.now()}-${file.name}`
+if (!supabaseAdmin) {
+  return new Response(
+    JSON.stringify({ error: "Supabase is not configured" }),
+    { status: 500 }
+  );
+}
 
-    await supabaseAdmin.storage
-      .from('cv-files')
-      .upload(path, buffer, { contentType: file.type, upsert: true })
-  }
+const path = `${tenant.tenantId}/bulk/${Date.now()}-${file.name}`
+
+await supabaseAdmin.storage
+  .from('cv-files')
+  .upload(path, buffer, { contentType: file.type, upsert: true })
 
   return NextResponse.redirect(new URL('/clients', req.url))
 }
