@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic"
 
 export async function POST(req: NextRequest) {
   try {
-    // Ensure tenant exists (uses /lib/requireTenant.ts we just created)
-    const tenant = await requireTenant("owner")
+    // ✅ FIXED: "owner" → "admin"
+    const tenant = await requireTenant("admin")
 
     const { question } = await req.json()
 
