@@ -5,7 +5,10 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     if (!Array.isArray(body)) {
-      return Response.json({ error: "Expected an array of CVs" }, { status: 400 });
+      return Response.json(
+        { error: "Expected an array of candidates" },
+        { status: 400 }
+      );
     }
 
     const { data, error } = await supabaseAdmin
@@ -18,7 +21,10 @@ export async function POST(req: Request) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ success: true, inserted: data?.length });
+    return Response.json({ 
+      success: true, 
+      inserted: data?.length || 0 
+    });
 
   } catch (err: any) {
     console.error("Server error:", err);
