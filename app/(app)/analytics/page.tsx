@@ -7,24 +7,25 @@ export default async function AnalyticsPage() {
   // Lock this page to highest-role users
   await requireTenant('owner')
 
-  const [
-    tenantsRes,
-    candidatesRes,
-    oppsRes,
-    hotCandidatesRes,
-    pipelineCountsRes,
-  ] = await Promise.all([
-    supabaseAdmin.from('tenants').select('id'),
-    supabaseAdmin.from('candidates').select('id, tenant_id, status'),
-    supabaseAdmin.from('opportunities').select('id, tenant_id, stage_id'),
-    supabaseAdmin
-      .from('cv_analysis')
-      .select('candidate_id, fit_score')
-      .gte('fit_score', 80),
-    supabaseAdmin
-      .from('candidate_master')
-      .select('pipeline_stage'),
-  ])
+if (!supabaseAdmin) {
+  return (
+    <div className="p-6 text-red-500">
+      Supabase is not configured correctly.
+      <br />
+      Please check environment variables.
+    </div>
+  );
+}
+
+const [
+  pipelineCountsRes,
+  candidatesRes,
+  opportunitiesRes,
+] = await Promise.all([
+  supabaseAdmin.from('tenants').select('id'),
+  supabaseAdmin.from('candidates').select('id, tenant_id, status'),
+  supabaseAdmin.from('opportunities').select('id, tenant_id, stage_id'),
+]);
 
   const totalTenants = tenantsRes.data?.length ?? 0
   const totalCandidates = candidatesRes.data?.length ?? 0
