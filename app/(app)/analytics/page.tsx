@@ -1,96 +1,63 @@
-// app/(app)/analytics/page.tsx
-import AppShell from '@/components/layout/app-shell'
-import { requireTenant } from '@/lib/auth'
-import { supabaseAdmin } from '@/lib/supabase'
+import AppShell from "@/components/layout/app-shell"
+import { requireTenant } from "@/lib/requireTenant"
+import { getSupabaseAdmin } from "@/lib/supabase"
+
+export const dynamic = "force-dynamic"
 
 export default async function AnalyticsPage() {
-  // Lock this page to highest-role users
-  await requireTenant('owner')
+  try {
+    // Lock this page to admin users
+    const tenant = await requireTenant("admin")
 
-if (!supabaseAdmin) {
-  return (
-    <div className="p-6 text-red-500">
-      Supabase is not configured correctly.
-      <br />
-      Please check environment variables.
-    </div>
-  );
-}
+    // Lazy-load Supabase (build-safe)
+    const supabaseAdmin = getSupabaseAdmin()
 
-const [
-  pipelineCountsRes,
-  candidatesRes,
-  oppsRes,
-  hotCandidatesRes,
-] = await Promise.all([
-  supabaseAdmin.from("tenants").select("id"),
-  supabaseAdmin.from("candidates").select("id, tenant_id, status"),
-  supabaseAdmin.from("opportunities").select("id, tenant_id, stage_id"),
-  supabaseAdmin.from("candidate_master").select("id").gte("fit_score", 80),
-]);
+    const { data: candidates, error } = await supabaseAdmin
+      .from("candidate_master")
+      .select("full_name, fit_score, pipeline_stage")
+      .eq("tenant_id", tenant.tenantId)
+      .order("fit_score", { ascending: false })
+      .limit(50)
 
- const totalTenants = pipelineCountsRes.data?.length ?? 0
-  const totalCandidates = candidatesRes.data?.length ?? 0
-  const totalOpps = oppsRes.data?.length ?? 0
-  const hotCandidates = hotCandidatesRes.data?.length ?? 0
+    if (error) {
+      console.error("Analytics query error:", error)
+      throw new Error("Failed to load analytics data")
+    }
 
-  const stageCounts: Record<string, number> = {}
-  ;(pipelineCountsRes.data ?? []).forEach((row: any) => {
-    const stage = row.pipeline_stage ?? 'Unknown'
-    stageCounts[stage] = (stageCounts[stage] ?? 0) + 1
-  })
+    return (
+      <AppShell>
+        <div className="p-8">
+          <h1 className="text-2xl font-bold mb-6">Analytics</h1>
 
-  return (
-    <AppShell>
-      <div className="space-y-8 p-6">
-        <div>
-          <h1 className="text-2xl font-semibold">Platform analytics</h1>
-          <p className="text-sm text-neutral-400">
-            High-level view across all tenants, candidates and pipelines.
-          </p>
+          {candidates && candidates.length > 0 ? (
+            <div className="grid gap-4">
+              {candidates.map((c, index) => (
+                <div
+                  key={index}
+                  className="border p-4 rounded bg-white shadow"
+                >
+                  <p><strong>Name:</strong> {c.full_name}</p>
+                  <p><strong>Fit Score:</strong> {c.fit_score ?? "N/A"}</p>
+                  <p><strong>Stage:</strong> {c.pipeline_stage}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No analytics data found for this tenant.</p>
+          )}
         </div>
+      </AppShell>
+    )
+  } catch (error: any) {
+    console.error("Analytics page error:", error)
 
-        {/* Top stats */}
-        <div className="grid md:grid-cols-4 gap-4">
-          <StatCard label="Tenants" value={totalTenants.toString()} />
-          <StatCard label="Candidates" value={totalCandidates.toString()} />
-          <StatCard label="Opportunities" value={totalOpps.toString()} />
-          <StatCard
-            label="High-fit candidates (80+)"
-            value={hotCandidates.toString()}
-          />
-        </div>
-
-        {/* Pipeline distribution */}
-        <section className="space-y-3">
-          <h2 className="text-sm font-medium">Pipeline distribution</h2>
-          <div className="rounded-2xl border border-neutral-800 p-4 flex flex-wrap gap-3">
-            {Object.keys(stageCounts).length === 0 && (
-              <p className="text-xs text-neutral-500">
-                No pipeline data yet.
-              </p>
-            )}
-            {Object.entries(stageCounts).map(([stage, count]) => (
-              <div
-                key={stage}
-                className="rounded-xl border border-neutral-800 px-3 py-2 text-xs flex items-center justify-between gap-4"
-              >
-                <span className="text-neutral-300">{stage}</span>
-                <span className="text-neutral-100 font-semibold">{count}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+    return (
+      <div className="p-10">
+        <h1 className="text-2xl font-bold mb-6">Analytics</h1>
+        <p className="text-red-500">
+          {error?.message || "Error loading analytics page"}
+        </p>
       </div>
-    </AppShell>
-  )
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-neutral-800 p-4 flex flex-col gap-1">
-      <span className="text-xs text-neutral-400">{label}</span>
-      <span className="text-2xl font-semibold">{value}</span>
-    </div>
-  )
+    )
+  }
 }
