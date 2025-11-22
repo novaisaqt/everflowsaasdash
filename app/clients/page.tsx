@@ -1,6 +1,8 @@
 import AppShell from '@/components/layout/app-shell'
 import { requireTenant } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
+import ViewCVModal from '@/components/ViewCVModal'
+import CandidateTimeline from '@/components/CandidateTimeline'
 
 export default async function ClientsPage() {
   const tenant = await requireTenant('manager')
@@ -18,6 +20,25 @@ export default async function ClientsPage() {
   return (
     <AppShell>
       <div className="space-y-6">
+        <form
+  action="/api/bulk-upload"
+  method="POST"
+  encType="multipart/form-data"
+  className="flex gap-2 items-center"
+>
+  <input
+    type="file"
+    name="files"
+    multiple
+    accept=".pdf,.doc,.docx"
+    className="text-xs"
+  />
+
+  <button className="border px-3 py-1 rounded-lg text-xs">
+    Bulk Upload CVs
+  </button>
+</form>
+
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">Candidates</h1>
