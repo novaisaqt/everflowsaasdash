@@ -1,12 +1,15 @@
-import { createClient } from "@supabase/supabase-js"
+import { createClient, SupabaseClient } from "@supabase/supabase-js"
 
 /**
- * IMPORTANT: Do NOT throw errors at top-level for env vars.
- * Next/Vercel sometimes evaluates this file at build-time.
- * We must only access env inside functions.
+ * We DO NOT read env variables or create clients at the top-level.
+ * This prevents Next.js / Vercel from crashing at build-time.
  */
 
-export function getSupabaseClient() {
+/**
+ * Standard (public) Supabase client
+ * For client components and non-admin usage
+ */
+export function getSupabaseClient(): SupabaseClient {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -17,7 +20,11 @@ export function getSupabaseClient() {
   return createClient(url, anon)
 }
 
-export function getSupabaseAdmin() {
+/**
+ * Admin Supabase client (SERVICE ROLE)
+ * For server use only.
+ */
+export function getSupabaseAdmin(): SupabaseClient {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const service = process.env.SUPABASE_SERVICE_ROLE_KEY
 
