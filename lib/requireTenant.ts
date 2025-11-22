@@ -1,25 +1,28 @@
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase"
 
 /**
- * Used to require a tenant based on role.
- * For now, this just grabs the first tenant row available
- * You can later extend this to look up by user, subdomain, etc.
+ * Ensures a tenant exists before allowing access.
+ * Role is currently logical only, but future-ready.
  */
-export async function requireTenant(role: "admin" | "manager" | "user") {
+export async function requireTenant(
+  role: "admin" | "manager" | "user" | "owner"
+) {
+  const supabaseAdmin = getSupabaseAdmin()
+
   const { data, error } = await supabaseAdmin
     .from("tenants")
     .select("*")
     .limit(1)
-    .single();
+    .single()
 
   if (error || !data) {
-    console.error("Tenant error:", error);
-    throw new Error("No tenant found");
+    console.error("Tenant error:", error)
+    throw new Error("No tenant found in system")
   }
 
   return {
     role,
     tenantId: data.id,
-    tenant: data
-  };
+    tenant: data,
+  }
 }
