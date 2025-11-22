@@ -1,47 +1,52 @@
-import { UserButton } from "@clerk/nextjs"
+// src/app/(app)/dashboard/page.tsx
+import AppShell from '@/components/layout/app-shell';
+import { requireTenant } from '@/lib/auth';
 
-export default function Dashboard() {
+export default async function DashboardPage() {
+  const tenant = await requireTenant('viewer');
+
+  // Later: fetch stats from Supabase (pipeline, candidates, etc.)
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white p-8">
-      
-      <header className="flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-bold">Everflow Dashboard</h1>
-        <UserButton />
-      </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        <div className="bg-slate-900 p-6 rounded-xl border border-slate-700">
-          <h2 className="text-xl font-semibold mb-2">Candidates</h2>
-          <p className="text-gray-400">Active pipeline</p>
-          <p className="text-4xl mt-4 font-bold">148</p>
+    <AppShell>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          <p className="text-sm text-neutral-400">
+            {tenant.tenantName} · Recruitment overview
+          </p>
         </div>
 
-        <div className="bg-slate-900 p-6 rounded-xl border border-slate-700">
-          <h2 className="text-xl font-semibold mb-2">Automation Runs</h2>
-          <p className="text-gray-400">This Month</p>
-          <p className="text-4xl mt-4 font-bold">3,420</p>
+        <div className="grid md:grid-cols-4 gap-4">
+          <StatCard label="Active candidates" value="42" />
+          <StatCard label="Open roles" value="11" />
+          <StatCard label="Interviews this week" value="7" />
+          <StatCard label="Offers out" value="3" />
         </div>
 
-        <div className="bg-slate-900 p-6 rounded-xl border border-slate-700">
-          <h2 className="text-xl font-semibold mb-2">Clients</h2>
-          <p className="text-gray-400">Active accounts</p>
-          <p className="text-4xl mt-4 font-bold">7</p>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="rounded-2xl border border-neutral-800 p-4">
+            <h2 className="text-sm font-medium mb-2">Pipeline snapshot</h2>
+            <p className="text-xs text-neutral-400">
+              TODO: show candidates per stage from Supabase.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-neutral-800 p-4">
+            <h2 className="text-sm font-medium mb-2">Recent activity</h2>
+            <p className="text-xs text-neutral-400">
+              TODO: show activity feed from automations / n8n.
+            </p>
+          </div>
         </div>
-
       </div>
+    </AppShell>
+  );
+}
 
-      <div className="mt-10 bg-slate-900 p-6 rounded-xl border border-slate-700">
-        <h2 className="text-2xl font-bold mb-4">System Status</h2>
-
-        <ul className="space-y-2 text-gray-300">
-          <li>✅ GHL Integration connected</li>
-          <li>✅ N8N automations live</li>
-          <li>✅ SMS pipelines active</li>
-          <li>✅ LinkedIn automations enabled</li>
-        </ul>
-      </div>
-
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-neutral-800 p-4 flex flex-col gap-1">
+      <span className="text-xs text-neutral-400">{label}</span>
+      <span className="text-2xl font-semibold">{value}</span>
     </div>
-  )
+  );
 }
