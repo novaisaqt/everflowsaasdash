@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { callOpenAI } from "@/lib/openai"
-import { supabaseAdmin } from "@/lib/supabase"
+import { getSupabaseAdmin } from "@/lib/supabase"
 import { requireTenant } from "@/lib/requireTenant"
 
-// Required by Next for dynamic API routes
 export const dynamic = "force-dynamic"
 
 export async function POST(req: NextRequest) {
   try {
-    // ✅ FIXED: "owner" → "admin"
+    // ✅ Use supported role
     const tenant = await requireTenant("admin")
+
+    // ✅ Lazy-load Supabase (prevents build-time crash)
+    const supabaseAdmin = getSupabaseAdmin()
 
     const { question } = await req.json()
 
@@ -20,7 +22,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Run all Supabase queries in parallel
     const [tenantsRes, candidatesRes, hotRes, pipelineRes] =
       await Promise.all([
         supabaseAdmin.from("tenants").select("id, name"),
