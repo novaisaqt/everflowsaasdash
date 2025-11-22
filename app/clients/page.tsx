@@ -123,3 +123,21 @@ function Td({
     </td>
   )
 }
+<form
+  action="/api/bulk-upload"
+  method="POST"
+  encType="multipart/form-data"
+  className="flex gap-2 items-center"
+>
+  <input
+    type="file"
+    name="files"
+    multiple
+    accept=".pdf,.doc,.docx"
+    className="text-xs"
+  />
+
+  <button className="border px-3 py-1 rounded-lg text-xs">
+    Bulk Upload CVs
+  </button>
+</form>
