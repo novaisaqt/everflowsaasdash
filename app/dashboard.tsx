@@ -6,6 +6,8 @@ import UploadZone from "./UploadZone";
 import CandidateCard from "./CandidateCard";
 import DropColumn from "./DropColumn";
 import { initialCandidates, Candidate } from "./mockData";
+import { UserButton } from "@clerk/nextjs";
+
 
 export default function Page() {
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates);
