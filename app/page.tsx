@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import CandidateCard from "./CandidateCard";
 import StatsBar from "./StatsBar";
 import UploadZone from "./UploadZone";
-import CandidateCard from "./CandidateCard";
 import DropColumn from "./DropColumn";
-import { initialCandidates, Candidate } from "./mockData";
-
 
 export default function Page() {
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates);
