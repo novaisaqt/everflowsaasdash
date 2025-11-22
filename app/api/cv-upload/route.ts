@@ -1,56 +1,43 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
-import { requireTenant } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server"
+import { createClient } from "@supabase/supabase-js"
+import { requireTenant } from "@/lib/auth"
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+
+const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+  auth: { persistSession: false }
+})
 
 export async function POST(req: NextRequest) {
   try {
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: "Supabase is not configured" },
-        { status: 500 }
-      );
-    }
+    const tenant = await requireTenant()
 
-    const tenant = await requireTenant("owner");
-
-    const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    const candidateId = formData.get("candidateId") as string | null;
+    const formData = await req.formData()
+    const file = formData.get("file") as File
+    const candidateId = formData.get("candidateId") as string
 
     if (!file || !candidateId) {
-      return NextResponse.json(
-        { error: "Missing file or candidateId" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing data" }, { status: 400 })
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const buffer = Buffer.from(await file.arrayBuffer())
 
-    const path = `${tenant.tenantId}/${candidateId}/${Date.now()}-${file.name}`;
+    const path = `${tenant.tenantId}/${candidateId}/${Date.now()}-${file.name}`
 
     const { error } = await supabaseAdmin.storage
       .from("cv-files")
       .upload(path, buffer, {
         contentType: file.type,
-        upsert: true,
-      });
+        upsert: true
+      })
 
     if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({
-      success: true,
-      path
-    });
-
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message || "Upload failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: true, path })
+  } catch (err) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 }
