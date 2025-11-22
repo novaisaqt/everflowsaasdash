@@ -9,7 +9,7 @@ export async function getCurrentUser() {
 
   return {
     id: user.id,
-    email: user.emailAddresses[0]?.emailAddress ?? null,
+    email: user.emailAddresses?.[0]?.emailAddress ?? null,
     name: user.fullName ?? 'User'
   }
 }
@@ -20,16 +20,17 @@ export async function getUserTenant() {
 
   const { data, error } = await supabaseAdmin
     .from('tenant_memberships')
-    .select('role, tenants(*)')
+    .select('role, tenants ( id, name )')
     .eq('user_id', user.id)
-    .limit(1)
-    .maybeSingle()
+    .single()
 
-  if (error || !data) return null
+  if (error || !data || !data.tenants) return null
+
+  const tenant = data.tenants as { id: string; name: string }
 
   return {
-    tenantId: data.tenants.id,
-    tenantName: data.tenants.name,
+    tenantId: tenant.id,
+    tenantName: tenant.name,
     role: data.role as Role
   }
 }
