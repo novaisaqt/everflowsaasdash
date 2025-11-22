@@ -1,6 +1,8 @@
 // app/dashboard/page.tsx
 "use client";
-import StatsBar from "./apps/StatsBar";
+
+import StatsBar from "../apps/StatsBar";
+
 
 import React, { useState } from "react";
 
