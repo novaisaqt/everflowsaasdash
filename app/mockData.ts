@@ -30,7 +30,7 @@ export const initialCandidates: Candidate[] = [
     role: "Customer Success Lead",
     experience: "4 years",
     score: 78,
-    skills: ["CRM", "Onboarding", "SaaS"],
+    skills: ["CRM", "Onboarding", "B2B SaaS"],
   },
   {
     id: "4",
@@ -41,3 +41,4 @@ export const initialCandidates: Candidate[] = [
     skills: ["Outbound", "Closing", "HubSpot"],
   },
 ];
+
