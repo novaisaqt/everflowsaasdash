@@ -1,6 +1,6 @@
 // src/app/(app)/analytics/page.tsx
 import AppShell from '@/components/layout/app-shell';
-import { requireTenant, requirePlatformAdmin } from '@/lib/auth';
+import { requireTenant } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase';
 
 export default async function AnalyticsPage() {
