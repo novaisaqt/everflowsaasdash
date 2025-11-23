@@ -1,9 +1,9 @@
 "use client"
 
-import CandidateTimeline from "@/components/candidates/CandidateTimeline"
-import ViewCVModal from "@/components/candidates/ViewCVModal"
-import AppShell from "@/components/layout/app-shell"
-import { supabase } from "@/lib/supabase"
+import ViewCVModal from "../../components/Candidates/ViewCVModal";
+import CandidateTimeline from "../../components/Candidates/CandidateTimeline";
+import { supabase } from "../../lib/supabase";
+
 
 export default function CandidatesPage() {
   const [candidates, setCandidates] = useState<any[]>([])
