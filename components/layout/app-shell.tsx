@@ -1,13 +1,9 @@
-// components/layout/app-shell.tsx
+import React from "react"
 
-export default function AppShell({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex bg-slate-950 text-slate-50">
-      <main className="flex-1 p-6">{children}</main>
+    <div className="min-h-screen bg-gray-100">
+      <main className="p-8">{children}</main>
     </div>
-  );
+  )
 }
