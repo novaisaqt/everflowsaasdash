@@ -1,25 +1,38 @@
-export default function CandidateTimeline({
-  candidates,
-  onSelect
-}: {
-  candidates: any[]
-  onSelect: (candidate: any) => void
-}) {
+'use client'
+
+import { Candidate } from "@/types/candidate"
+
+interface CandidateTimelineProps {
+  candidates: Candidate[]
+  onSelect: (candidate: Candidate) => void
+}
+
+export default function CandidateTimeline({ candidates, onSelect }: CandidateTimelineProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {candidates.map((c) => (
+    <>
+      {candidates.map((candidate) => (
         <div
-          key={c.id}
-          className="p-4 border rounded-lg bg-white shadow hover:shadow-md cursor-pointer"
-          onClick={() => onSelect(c)}
+          key={candidate.candidate_id}
+          className="bg-[#0f172a] border border-white/10 rounded-lg p-4 hover:border-blue-500 cursor-pointer transition"
+          onClick={() => onSelect(candidate)}
         >
-          <h2 className="font-bold">{c.full_name}</h2>
-          <p className="text-sm text-gray-500">{c.email}</p>
-          <p className="text-sm mt-2">
-            Fit Score: <span className="font-semibold">{c.fit_score}</span>
+          <h2 className="font-bold text-lg">
+            {candidate.full_name || "Unnamed Candidate"}
+          </h2>
+
+          <p className="text-sm opacity-60">{candidate.email || "No email"}</p>
+          <p className="text-sm opacity-60">
+            {candidate.current_job_title || "No job title"}
           </p>
+
+          <div className="mt-2 flex justify-between text-sm">
+            <span>Stage: {candidate.pipeline_stage || "N/A"}</span>
+            <span className="text-blue-400 font-bold">
+              {candidate.fit_score ?? 0}%
+            </span>
+          </div>
         </div>
       ))}
-    </div>
+    </>
   )
 }
