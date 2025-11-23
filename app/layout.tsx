@@ -1,19 +1,12 @@
-import "../styles/globals.css"
-import AppShell from "../components/layout/app-shell"
-
 export const metadata = {
-  title: "Everflow Dashboard",
+  title: "Everflow",
   description: "Recruitment SaaS"
-};
+}
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <AppShell>
-          {children}
-        </AppShell>
-      </body>
+      <body>{children}</body>
     </html>
-  );
+  )
 }
