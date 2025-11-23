@@ -1,4 +1,4 @@
-'use client'
+x'use client'
 
 export const dynamic = "force-dynamic";
 
@@ -55,7 +55,9 @@ export default function CandidatesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <CandidateTimeline
           candidates={candidates}
-          onSelect={(candidate: Candidate) => setSelectedCandidate(candidate)}
+          onSelect={(candidate: Candidate) =>
+            setSelectedCandidate(candidate)
+          }
         />
       </div>
 
