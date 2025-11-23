@@ -2,9 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
-import AppShell from "../../components/app-shell";
-import ViewCVModal from "../../components/ViewCVModal";
+
+// ✅ CORRECT PATH
+import AppShell from "../../components/layout/app-shell";
+import ViewCVModal from "../../components/ui/ViewCVModal";
 import CandidateTimeline from "../../components/CandidateTimeline";
+
 
 type Candidate = {
   candidate_id: string;
