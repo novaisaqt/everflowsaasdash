@@ -31,6 +31,8 @@ export default function CandidatesPage() {
     loadCandidates();
   }, []);
 
+  }, []);
+
   if (loading) {
     return (
       <div className="p-8 text-white">
