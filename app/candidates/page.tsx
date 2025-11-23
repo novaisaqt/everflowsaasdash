@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
 import { useEffect, useState } from "react"
-import { supabase } from "../../lib/supabase"
+import { supabase } from "@/lib/supabase"
 
-import CandidateTimeline from "../../components/Candidates/CandidateTimeline"
-import ViewCVModal from "../../components/Candidates/ViewCVModal"
+import CandidateTimeline from "@/components/Candidates/CandidateTimeline"
+import ViewCVModal from "@/components/Candidates/ViewCVModal"
 
 export const dynamic = "force-dynamic"
 
@@ -14,7 +14,7 @@ export default function CandidatesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null)
 
   useEffect(() => {
-    const loadCandidates = async () => {
+    async function loadCandidates() {
       const { data, error } = await supabase
         .from("candidates")
         .select("*")
@@ -36,7 +36,6 @@ export default function CandidatesPage() {
 
   return (
     <div className="p-8">
-
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Candidates</h1>
         <span className="text-sm text-gray-500">
@@ -55,7 +54,6 @@ export default function CandidatesPage() {
           onClose={() => setSelectedCandidate(null)}
         />
       )}
-
     </div>
   )
 }
