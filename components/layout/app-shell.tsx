@@ -1,16 +1,7 @@
-import "../styles/globals.css"
-import AppShell from "@/components/layout/app-shell"
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
-        <AppShell>{children}</AppShell>
-      </body>
-    </html>
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <main className="p-8">{children}</main>
+    </div>
   )
 }
