@@ -1,10 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import AppShell from "@/components/layout/app-shell"
-import { supabase } from "@/lib/supabase"
 import ViewCVModal from "@/components/ui/ViewCVModal"
 import CandidateTimeline from "@/components/ui/CandidateTimeline"
+
 
 type Candidate = {
   candidate_id: string
