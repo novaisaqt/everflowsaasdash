@@ -1,37 +1,52 @@
-'use client'
-import { useState } from 'react'
+"use client";
 
-export default function CandidateTimeline({ candidateId }: { candidateId: string }) {
-  const [note, setNote] = useState('')
+import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 
-  async function addNote() {
-    if (!note) return
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-    await fetch('/api/notes', {
-      method: 'POST',
-      body: JSON.stringify({ candidateId, content: note }),
-      headers: { 'Content-Type': 'application/json' },
-    })
+export default function CandidateTimeline({
+  candidateId,
+}: {
+  candidateId: string;
+}) {
+  const [events, setEvents] = useState<any[]>([]);
 
-    setNote('')
-    window.location.reload()
-  }
+  useEffect(() => {
+    if (!candidateId) return;
+
+    const load = async () => {
+      const { data } = await supabase
+        .from("candidate_activity")
+        .select("*")
+        .eq("candidate_id", candidateId)
+        .order("created_at", { ascending: false });
+
+      setEvents(data || []);
+    };
+
+    load();
+  }, [candidateId]);
 
   return (
-    <div className="space-y-2 border border-neutral-800 rounded-xl p-2 mt-2">
-      <textarea
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        placeholder="Add note..."
-        className="w-full bg-neutral-950 border border-neutral-800 rounded-lg text-xs p-2"
-      />
+    <details className="text-xs">
+      <summary className="cursor-pointer">Timeline</summary>
 
-      <button
-        onClick={addNote}
-        className="text-xs border border-neutral-700 rounded px-2 py-1"
-      >
-        Save Note
-      </button>
-    </div>
-  )
+      {events.length === 0 && (
+        <p className="mt-1 text-gray-400">No activity yet</p>
+      )}
+
+      {events.map((e, i) => (
+        <div key={i} className="mt-1 border-l pl-2">
+          <p className="font-semibold">{e.type}</p>
+          <p className="text-[10px] text-gray-500">
+            {new Date(e.created_at).toLocaleString()}
+          </p>
+        </div>
+      ))}
+    </details>
+  );
 }
