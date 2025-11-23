@@ -15,7 +15,7 @@ export default function CandidatesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   useEffect(() => {
-    async function loadCandidates() {
+    const loadCandidates = async () => {
       const { data, error } = await supabase
         .from("candidates")
         .select("*")
@@ -26,11 +26,9 @@ export default function CandidatesPage() {
       }
 
       setLoading(false);
-    }
+    };
 
     loadCandidates();
-  }, []);
-
   }, []);
 
   if (loading) {
@@ -55,11 +53,10 @@ export default function CandidatesPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <CandidateTimeline
-  candidates={candidates}
-  onSelect={(candidate: any) => setSelectedCandidate(candidate)}
-/>
-        ))}
+        <CandidateTimeline
+          candidates={candidates}
+          onSelect={(candidate: Candidate) => setSelectedCandidate(candidate)}
+        />
       </div>
 
       {selectedCandidate && (
