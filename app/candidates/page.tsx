@@ -4,14 +4,15 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { Candidate } from "@/types/candidate";
 
 import CandidateTimeline from "@/components/Candidates/CandidateTimeline";
 import ViewCVModal from "@/components/Candidates/ViewCVModal";
 
 export default function CandidatesPage() {
-  const [candidates, setCandidates] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   useEffect(() => {
     async function loadCandidates() {
@@ -21,7 +22,7 @@ export default function CandidatesPage() {
         .order("fit_score", { ascending: false });
 
       if (!error && data) {
-        setCandidates(data);
+        setCandidates(data as Candidate[]);
       }
 
       setLoading(false);
