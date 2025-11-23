@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-import AppShell from "../../components/layout/app-shell";
-import ViewCVModal from "../../components/candidates/ViewCVModal";
-import CandidateTimeline from "../../components/candidates/CandidateTimeline";
+import ViewCVModal from "@/components/Candidates/ViewCVModal"
+import CandidateTimeline from "@/components/Candidates/CandidateTimeline"
+import AppShell from "@/components/layout/app-shell"
 
 type Candidate = {
   candidate_id: string;
