@@ -1,8 +1,11 @@
-"use client";
+import { createClient } from "@supabase/supabase-js"
 
-import { createClient } from '@supabase/supabase-js'
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ??
+  "https://ogtlffswwinyxdppvqgv.supabase.co"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+const supabaseKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  "sb_publishable_lf5ShsQSqbYEjrzkuCQOjQ_iPsrRcLu"
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
