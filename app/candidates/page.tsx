@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
-import AppShell from "../../components/AppShell";
+import AppShell from "../../components/app-shell";
 import ViewCVModal from "../../components/ViewCVModal";
 import CandidateTimeline from "../../components/CandidateTimeline";
 
