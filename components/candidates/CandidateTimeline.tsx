@@ -1,31 +1,22 @@
-"use client"
-
-export type Candidate = {
-  id: string
-  name: string
-  stage: string
-}
-
-interface Props {
-  onSelect: (candidate: Candidate) => void
+type Props = {
+  onSelect: (id: string) => void
 }
 
 export default function CandidateTimeline({ onSelect }: Props) {
-  const candidates: Candidate[] = [
-    { id: "1", name: "John Carter", stage: "Screening" },
-    { id: "2", name: "Sarah Thompson", stage: "Interview" }
+  const candidates = [
+    { id: '1', name: 'John Doe' },
+    { id: '2', name: 'Sarah Smith' },
   ]
 
   return (
-    <div className="grid gap-4">
+    <div className="space-y-4">
       {candidates.map((c) => (
         <div
           key={c.id}
-          onClick={() => onSelect(c)}
-          className="cursor-pointer rounded border border-white/10 bg-[#111827] p-4 hover:border-blue-500"
+          onClick={() => onSelect(c.id)}
+          className="p-4 border rounded cursor-pointer hover:bg-gray-100"
         >
-          <h3 className="font-semibold">{c.name}</h3>
-          <p className="text-sm text-white/70">{c.stage}</p>
+          {c.name}
         </div>
       ))}
     </div>
