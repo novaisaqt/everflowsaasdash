@@ -1,19 +1,17 @@
 export default function ViewCVModal({
   cvUrl,
   score,
-  summary,
 }: {
   cvUrl: string
   score: number
-  summary: string
 }) {
   return (
     <a
       href={cvUrl}
       target="_blank"
-      className="bg-black text-white px-3 py-1 rounded"
+      className="px-3 py-2 bg-black text-white text-sm rounded hover:opacity-80"
     >
-      View CV ({score})
+      View CV (Score: {score})
     </a>
   )
 }
