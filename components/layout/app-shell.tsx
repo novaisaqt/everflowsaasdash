@@ -1,14 +1,13 @@
-"use client"
+// components/layout/app-shell.tsx
 
-import React from "react"
-
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="min-h-screen bg-[#0b1120] text-white">
-      <div className="p-6 border-b border-white/10 text-xl font-bold">
-        Everflow AI Dashboard
-      </div>
-      <main className="p-6">{children}</main>
+    <div className="min-h-screen flex bg-slate-950 text-slate-50">
+      <main className="flex-1 p-6">{children}</main>
     </div>
-  )
+  );
 }
