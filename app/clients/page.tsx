@@ -1,6 +1,7 @@
-import AppShell from "../../components/AppShell";
+import AppShell from "../../components/layout/app-shell";
 
 export default function ClientsPage() {
+
   return (
     <AppShell>
       <div className="p-8">
