@@ -15,31 +15,28 @@ export default function CandidatesPage() {
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("candidates")
-          .select("*")
-          .order("fit_score", { ascending: false })
+      const { data, error } = await supabase
+        .from("candidates")
+        .select("*")
+        .order("fit_score", { ascending: false })
 
-        if (error) {
-          console.error("Supabase error:", error.message)
-        } else {
-          setCandidates(data || [])
-        }
-      } catch (err) {
-        console.error("Unexpected error:", err)
-      } finally {
-        setLoading(false)
+      if (!error && data) {
+        setCandidates(data)
       }
+
+      setLoading(false)
     }
 
     load()
   }, [])
 
-  if (loading) return <div className="p-8">Loading candidates...</div>
+  if (loading) {
+    return <div className="p-8">Loading candidates...</div>
+  }
 
   return (
     <div className="p-8">
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Candidates</h1>
         <span className="text-sm text-gray-500">
@@ -58,6 +55,7 @@ export default function CandidatesPage() {
           onClose={() => setSelectedCandidate(null)}
         />
       )}
+
     </div>
   )
 }
