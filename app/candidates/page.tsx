@@ -1,6 +1,12 @@
+"use client"
+
 export const dynamic = "force-dynamic"
 
-"use client"
+import { useEffect, useState } from "react"
+import { supabase } from "../../lib/supabase"
+import CandidateTimeline from "../../components/Candidates/CandidateTimeline"
+import ViewCVModal from "../../components/Candidates/ViewCVModal"
+
 
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
