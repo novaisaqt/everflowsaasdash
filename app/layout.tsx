@@ -1,12 +1,7 @@
-import "../styles/globals.css"
-
-export const metadata = {
-  title: "Everflow AI",
-  description: "Recruitment OS",
-}
+import "@/styles/globals.css"
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {
