@@ -1,24 +1,90 @@
-type Props = {
-  onSelect: (id: string) => void
+'use client'
+
+import { useEffect, useState } from 'react'
+import AppShell from '@/components/layout/app-shell'
+
+import ViewCVModal from '@/components/Candidates/ViewCVModal'
+import CandidateTimeline from '@/components/Candidates/CandidateTimeline'
+
+import { supabase } from '@/lib/supabase'
+
+type Candidate = {
+  candidate_id: string
+  full_name: string | null
+  email: string | null
+  pipeline_stage: string | null
+  fit_score: number | null
+  summary: string | null
+  cv_url: string | null
 }
 
-export default function CandidateTimeline({ onSelect }: Props) {
-  const candidates = [
-    { id: '1', name: 'John Doe' },
-    { id: '2', name: 'Sarah Smith' },
-  ]
+export default function CandidatesPage() {
+  const [candidates, setCandidates] = useState<Candidate[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      const { data, error } = await supabase
+        .from('candidates')
+        .select('*')
+
+      if (!error && data) {
+        setCandidates(data)
+      }
+
+      setLoading(false)
+    }
+
+    fetchCandidates()
+  }, [])
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="p-8 text-lg">Loading candidates...</div>
+      </AppShell>
+    )
+  }
 
   return (
-    <div className="space-y-4">
-      {candidates.map((c) => (
-        <div
-          key={c.id}
-          onClick={() => onSelect(c.id)}
-          className="p-4 border rounded cursor-pointer hover:bg-gray-100"
-        >
-          {c.name}
+    <AppShell>
+      <div className="p-8">
+
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Candidates</h1>
+          <span className="text-sm text-muted-foreground">
+            {candidates.length} records
+          </span>
         </div>
-      ))}
-    </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+          {candidates.map((c) => (
+            <div key={c.candidate_id} className="border rounded-lg p-4 bg-white shadow">
+
+              <h2 className="font-semibold text-lg mb-2">
+                {c.full_name ?? 'Unnamed Candidate'}
+              </h2>
+
+              <p className="text-sm"><strong>Email:</strong> {c.email ?? 'N/A'}</p>
+              <p className="text-sm"><strong>Stage:</strong> {c.pipeline_stage ?? 'N/A'}</p>
+              <p className="text-sm"><strong>Score:</strong> {c.fit_score ?? 'N/A'}</p>
+
+              <div className="mt-4 flex gap-2">
+                <ViewCVModal
+                  cvUrl={c.cv_url ?? ''}
+                  score={c.fit_score ?? 0}
+                  summary={c.summary ?? ''}
+                />
+
+                <CandidateTimeline candidateId={c.candidate_id} />
+              </div>
+
+            </div>
+          ))}
+
+        </div>
+      </div>
+    </AppShell>
   )
 }
