@@ -1,8 +1,8 @@
 import "../styles/globals.css"
 
 export const metadata = {
-  title: "Everflow SaaS",
-  description: "AI Recruitment Platform",
+  title: "Everflow AI",
+  description: "Recruitment OS",
 }
 
 export default function RootLayout({
