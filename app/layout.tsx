@@ -1,5 +1,5 @@
-import "../styles/globals.css";
-import AppShell from "../components/layout/app-shell";
+import "../styles/globals.css"
+import AppShell from "../components/layout/app-shell"
 
 export const metadata = {
   title: "Everflow Dashboard",
