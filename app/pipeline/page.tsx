@@ -1,7 +1,10 @@
 // src/app/(app)/pipeline/page.tsx
-import AppShell from '@/components/layout/app-shell';
-import { requireTenant } from '@/lib/auth';
-import { supabaseAdmin } from '@/lib/supabase';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default async function PipelinePage() {
   const tenant = await requireTenant('manager');
