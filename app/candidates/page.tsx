@@ -52,12 +52,10 @@ export default function CandidatesPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {candidates.map((c) => (
-          <CandidateTimeline
-            key={c.candidate_id}
-            candidate={c}
-            onViewCV={() => setSelectedCandidate(c)}
-          />
+      <CandidateTimeline
+  candidates={candidates}
+  onSelect={(candidate: any) => setSelectedCandidate(candidate)}
+/>
         ))}
       </div>
 
