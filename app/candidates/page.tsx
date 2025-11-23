@@ -1,103 +1,81 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
-import { createClient } from "@supabase/supabase-js"
+import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 
-import AppShell from "@/components/layout/app-shell"
-import ViewCVModal from "@/components/ui/ViewCVModal"
-import CandidateTimeline from "@/components/ui/CandidateTimeline"
+import AppShell from "../../components/layout/app-shell";
+import ViewCVModal from "../../components/ui/ViewCVModal";
+import CandidateTimeline from "../../components/ui/CandidateTimeline";
 
 type Candidate = {
-  candidate_id: string
-  full_name?: string
-  email?: string
-  pipeline_stage?: string
-  fit_score?: number
-  summary?: string
-  cv_url?: string
-  notes?: string
-  owner?: string | null
-}
-
-const STAGES = ["Shortlisted", "Hot", "Warm", "Interview", "Rejected", "Hired"]
+  candidate_id: string;
+  full_name: string;
+  email: string;
+  pipeline_stage?: string;
+  fit_score?: number;
+  summary?: string;
+  cv_url?: string;
+};
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+);
 
 export default function CandidatesPage() {
-  const [items, setItems] = useState<Candidate[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState("")
-  const [dragging, setDragging] = useState<string | null>(null)
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [selected, setSelected] = useState<Candidate | null>(null);
 
   useEffect(() => {
-    const fetchCandidates = async () => {
-      const { data, error } = await supabase
-        .from("candidates")
-        .select("*")
-        .order("created_at", { ascending: false })
+    fetchCandidates();
+  }, []);
 
-      if (!error && data) setItems(data as Candidate[])
-      setLoading(false)
-    }
+  const fetchCandidates = async () => {
+    const { data, error } = await supabase.from("candidates").select("*");
 
-    fetchCandidates()
-  }, [])
-
-  const filtered = useMemo(() => {
-    const term = search.toLowerCase()
-    return items.filter(
-      (c) =>
-        c.full_name?.toLowerCase().includes(term) ||
-        c.email?.toLowerCase().includes(term)
-    )
-  }, [items, search])
+    if (!error && data) setCandidates(data);
+  };
 
   return (
     <AppShell>
-      <div className="p-8 flex flex-col gap-6">
+      <div className="p-8">
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Candidates</h1>
-          <input
-            className="border p-2 rounded-md"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <span className="text-sm text-muted-foreground">
+            {candidates.length} records
+          </span>
         </div>
 
-        {loading && <p>Loading candidates...</p>}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {candidates.map((c) => (
+            <div
+              key={c.candidate_id}
+              className="border rounded-lg p-4 bg-white shadow hover:shadow-lg transition"
+            >
+              <h2 className="font-semibold text-lg mb-2">
+                {c.full_name || "Unnamed"}
+              </h2>
 
-        {!loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filtered.map((c) => (
-              <div
-                key={c.candidate_id}
-                className="bg-white p-4 rounded-lg shadow border"
+              <p className="text-sm"><strong>Email:</strong> {c.email}</p>
+              <p className="text-sm"><strong>Stage:</strong> {c.pipeline_stage}</p>
+              <p className="text-sm"><strong>Score:</strong> {c.fit_score}</p>
+
+              <button
+                onClick={() => setSelected(c)}
+                className="mt-4 text-blue-600 hover:underline"
               >
-                <h3 className="font-bold">{c.full_name || "Unnamed"}</h3>
-                <p className="text-sm text-gray-500">{c.email}</p>
+                View CV
+              </button>
+            </div>
+          ))}
+        </div>
 
-                <div className="mt-3 flex gap-2">
-                  <ViewCVModal
-                    cvUrl={c.cv_url || ""}
-                    score={c.fit_score || 0}
-                    summary={c.summary || ""}
-                  />
-
-                  <CandidateTimeline
-                    candidateId={c.candidate_id}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+        {selected && (
+          <ViewCVModal candidate={selected} onClose={() => setSelected(null)} />
         )}
 
       </div>
     </AppShell>
-  )
+  );
 }
