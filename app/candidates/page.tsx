@@ -15,34 +15,25 @@ export default function CandidatesPage() {
 
   useEffect(() => {
     const load = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("candidates")
         .select("*")
         .order("fit_score", { ascending: false })
 
-      if (!error && data) {
-        setCandidates(data)
-      }
-
+      if (data) setCandidates(data)
       setLoading(false)
     }
 
     load()
   }, [])
 
-  if (loading) {
-    return <div className="p-8">Loading candidates...</div>
-  }
+  if (loading) return <div className="p-8">Loading...</div>
 
   return (
     <div className="p-8">
-
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Candidates</h1>
-        <span className="text-sm text-gray-500">
-          {candidates.length} records
-        </span>
-      </div>
+      <h1 className="text-2xl font-bold mb-6">
+        Candidates ({candidates.length})
+      </h1>
 
       <CandidateTimeline
         candidates={candidates}
@@ -55,7 +46,6 @@ export default function CandidatesPage() {
           onClose={() => setSelectedCandidate(null)}
         />
       )}
-
     </div>
   )
 }
