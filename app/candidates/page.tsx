@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import supabase from "../../lib/supabase"
+import { supabase } from "../../lib/supabase"
+
 
 import CandidateTimeline from "../../components/Candidates/CandidateTimeline"
 import ViewCVModal from "../../components/Candidates/ViewCVModal"
