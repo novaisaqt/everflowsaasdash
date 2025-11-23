@@ -1,10 +1,12 @@
-import AppShell from "@/components/layout/app-shell"
+import AppShell from "@/components/layout/app-shell";
 
-export default function HomePage() {
+export default function Page() {
   return (
     <AppShell>
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      <p className="opacity-70 mt-2">Welcome to your Everflow system</p>
+      <div className="p-8">
+        <h1 className="text-3xl font-bold">Everflow Dashboard</h1>
+        <p className="text-muted-foreground">System online</p>
+      </div>
     </AppShell>
-  )
+  );
 }
