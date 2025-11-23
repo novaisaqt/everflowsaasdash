@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// ✅ CORRECT PATH
 import AppShell from "../../components/layout/app-shell";
 import ViewCVModal from "../../components/ui/ViewCVModal";
 import CandidateTimeline from "../../components/CandidateTimeline";
