@@ -1,9 +1,10 @@
+import type { Metadata } from "next"
 import "@/styles/globals.css"
 import AppShell from "@/components/layout/app-shell"
 
-export const metadata = {
-  title: "Everflow Dashboard",
-  description: "AI-powered recruitment SaaS",
+export const metadata: Metadata = {
+  title: "Everflow SaaS",
+  description: "Recruitment dashboard",
 }
 
 export default function RootLayout({
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppShell>{children}</AppShell>
+        <AppShell>
+          {children}
+        </AppShell>
       </body>
     </html>
   )
