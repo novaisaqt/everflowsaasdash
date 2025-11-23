@@ -3,41 +3,57 @@
 import AppShell from "@/components/layout/app-shell"
 
 export default function AnalyticsPage() {
+  const stats = [
+    { title: "Total Candidates", value: 124 },
+    { title: "AI Shortlisted", value: 37 },
+    { title: "Interviews Booked", value: 18 },
+    { title: "Hires Completed", value: 6 }
+  ]
+
   return (
     <AppShell>
       <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">
-          Analytics Dashboard
+        <h1 className="text-3xl font-bold mb-8">
+          📊 AI Recruitment Analytics
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <h2 className="font-semibold mb-2">Total Candidates</h2>
-            <p className="text-3xl font-bold">0</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <h2 className="font-semibold mb-2">AI Scored</h2>
-            <p className="text-3xl font-bold">0</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <h2 className="font-semibold mb-2">Top Matches</h2>
-            <p className="text-3xl font-bold">0</p>
-          </div>
-
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {stats.map((stat, i) => (
+            <div key={i} className="bg-white p-6 rounded-xl shadow border">
+              <p className="text-sm text-gray-500">{stat.title}</p>
+              <h2 className="text-4xl font-bold mt-2">{stat.value}</h2>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-10 bg-white p-6 rounded-lg shadow border">
-          <h2 className="font-semibold mb-4">System Status</h2>
+        {/* Activity */}
+        <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-          <ul className="space-y-2 text-sm">
-            <li>✅ Server connected</li>
-            <li>✅ Database ready</li>
-            <li>✅ AI pipelines active</li>
-            <li>🟡 Waiting for real data</li>
-          </ul>
+          <div className="bg-white p-6 rounded-xl shadow border">
+            <h2 className="font-semibold text-lg mb-4">
+              🔥 Top Performing Roles
+            </h2>
+            <ul className="space-y-3">
+              <li>• Software Engineer</li>
+              <li>• Sales Executive</li>
+              <li>• Data Analyst</li>
+              <li>• Product Designer</li>
+            </ul>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow border">
+            <h2 className="font-semibold text-lg mb-4">
+              ⚡ System Health
+            </h2>
+            <ul className="space-y-3 text-sm">
+              <li>✅ API connected</li>
+              <li>✅ Database synced</li>
+              <li>✅ AI engine running</li>
+              <li>🟡 Awaiting more data</li>
+            </ul>
+          </div>
+
         </div>
       </div>
     </AppShell>
