@@ -1,15 +1,24 @@
-import "../styles/globals.css";
+"use client"
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { useState } from "react"
+import CandidateTimeline, {
+  Candidate,
+} from "../../components/candidates/CandidateTimeline"
+import ViewCVModal from "../../components/candidates/ViewCVModal"
+import AppShell from "../../components/layout/app-shell"
+
+export default function CandidatesPage() {
+  const [selected, setSelected] = useState<Candidate | null>(null)
+
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-gray-50">
-        {children}
-      </body>
-    </html>
-  );
+    <AppShell>
+      <h1 className="text-3xl font-bold mb-6">Talent Pipeline</h1>
+
+      <CandidateTimeline onSelect={setSelected} />
+
+      {selected && (
+        <ViewCVModal candidate={selected} onClose={() => setSelected(null)} />
+      )}
+    </AppShell>
+  )
 }
