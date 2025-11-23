@@ -1,5 +1,10 @@
-import { currentUser } from '@clerk/nextjs/server'
-import { supabaseAdmin } from './supabase'
+import { createClient } from "@supabase/supabase-js";
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 
 export type Role = 'owner' | 'admin' | 'manager' | 'viewer'
 
