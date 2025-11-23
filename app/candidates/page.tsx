@@ -15,24 +15,28 @@ export default function CandidatesPage() {
 
   useEffect(() => {
     const load = async () => {
-      const { data, error } = await supabase
-        .from("candidates")
-        .select("*")
-        .order("fit_score", { ascending: false })
+      try {
+        const { data, error } = await supabase
+          .from("candidates")
+          .select("*")
+          .order("fit_score", { ascending: false })
 
-      if (!error && data) {
-        setCandidates(data)
+        if (error) {
+          console.error("Supabase error:", error.message)
+        } else {
+          setCandidates(data || [])
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err)
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
 
     load()
   }, [])
 
-  if (loading) {
-    return <div className="p-8">Loading candidates...</div>
-  }
+  if (loading) return <div className="p-8">Loading candidates...</div>
 
   return (
     <div className="p-8">
