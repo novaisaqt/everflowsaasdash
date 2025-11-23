@@ -1,24 +1,20 @@
-"use client"
+// app/layout.tsx
 
-import { useState } from "react"
-import CandidateTimeline, {
-  Candidate,
-} from "../../components/candidates/CandidateTimeline"
-import ViewCVModal from "../../components/candidates/ViewCVModal"
-import AppShell from "../../components/layout/app-shell"
+import './globals.css'
 
-export default function CandidatesPage() {
-  const [selected, setSelected] = useState<Candidate | null>(null)
+export const metadata = {
+  title: 'Everflow SaaS',
+  description: 'Recruitment Dashboard',
+}
 
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <AppShell>
-      <h1 className="text-3xl font-bold mb-6">Talent Pipeline</h1>
-
-      <CandidateTimeline onSelect={setSelected} />
-
-      {selected && (
-        <ViewCVModal candidate={selected} onClose={() => setSelected(null)} />
-      )}
-    </AppShell>
+    <html lang="en">
+      <body>{children}</body>
+    </html>
   )
 }
